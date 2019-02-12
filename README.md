@@ -1,6 +1,13 @@
 # gbsnCHAT
 A real-time chat using flask (python framework), Socket IO, and SQLalchemy
 
+What can you do with this app?
+- Login with facebook
+- save your messages
+- chat in group or private
+- create acount
+- and others
+
 Credits to https://ariclenessilva.github.io./
 
 Design By https://bootsnipp.com/snippets/exR5v
