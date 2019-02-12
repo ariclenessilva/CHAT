@@ -6,6 +6,7 @@ Credits to https://ariclenessilva.github.io./
 Design By https://bootsnipp.com/snippets/exR5v
 
 Resources:
+- https://developers.facebook.com/docs/facebook-login/
 - https://socket.io/
 - https://flask-socketio.readthedocs.io/en/latest/
 - https://www.python.org/
