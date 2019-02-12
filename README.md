@@ -1,5 +1,5 @@
 # gbsnCHAT
-A real-time chat using flask, Socket IO, and SQLalchemy
+A real-time chat using flask (python framework), Socket IO, and SQLalchemy
 
 Credits to https://ariclenessilva.github.io./
 
