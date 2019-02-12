@@ -1,0 +1,109 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Untitled Document</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+
+<body>
+	
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : {{the_appID}},
+      cookie     : true,
+      xfbml      : true,
+      version    : 'v3.2'
+    });
+      
+    FB.AppEvents.logPageView();   
+      
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "https://connect.facebook.net/en_US/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+	
+	FB.getLoginStatus(function(response) {
+    statusChangeCallback(response);
+});
+	
+	
+function checkLoginState() {
+  FB.getLoginStatus(function(response) {
+    statusChangeCallback(response);
+  });
+}
+	
+	// This is called with the results from from FB.getLoginStatus().
+function statusChangeCallback(response) {
+// The response object is returned with a status field that lets the app know the current login status of the person.
+if (response.status === 'connected') {
+console.log('Welcome! Fetching your information.... ');
+FB.api('/me', function(response) {
+console.log('Successful login for: ' + response.name);
+	document.getElementById('exampleInputEmail2').value=response.name; 
+	document.getElementById('exampleInputPassword2').value='FACEBOOK';
+	document.forms["myForm"].submit();
+document.getElementById('status').innerHTML =
+'Thanks for logging in, ' + response.name + '!';
+});
+} else if (response.status === 'not_authorized') {
+// The person is logged into Facebook, but not your app.
+document.getElementById('status').innerHTML = 'Please log ' + 'into this app.';
+} else {
+// The person is not logged into Facebook, so we're not sure if they are logged into this app or not.
+document.getElementById('status').innerHTML = 'Please log ' + 'into Facebook.';
+}
+}
+</script>
+	
+	
+
+<div style="display: none" id="status">
+</div>
+	
+	<div style="left: 43%;position: absolute;top: 32%">
+			<fb:login-button 
+			  scope="public_profile,email"
+			  onlogin="checkLoginState();">
+			</fb:login-button>
+		</div>
+	
+	<p style="left: 45%;position: absolute;top: 40%">OR</p>
+	
+	<div style="margin-top:130px;position: absolute; left: 40%;">Welcome to the GBSNchat</div>
+	<form method="post" style="margin-top:180px;width: 80%;border: thick;left: 5%;top: 22%; position: absolute;background: white">
+	  <div class="form-group">
+		<label for="exampleInputEmail1">Username</label>
+		<input type="text" value="" name="username" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter your username">
+	  </div>
+	  <div class="form-group">
+		<label for="exampleInputPassword1">Password</label>
+		<input name="password" type="password" class="form-control" id="exampleInputPassword1" placeholder="Enter your Password">
+	  </div>
+	  <button type="submit" class="btn btn-primary">Login</button>
+	<div class="form-check">
+		<p></p>
+		<label class="form-check-label" for="exampleCheck1"><a href="/signup_page">or SignUp</a></label>
+	  </div>
+	</form>
+	
+	<form style="display: none" name="myForm" id="myForm" target="" action="" method="POST">
+        <input type="text" value="" name="username" class="form-control" id="exampleInputEmail2" aria-describedby="emailHelp" placeholder="Enter your username">
+        <input name="password" type="password" class="form-control" id="exampleInputPassword2" placeholder="Enter your Password">
+		<input type="submit" value="Submit" />
+    </p>
+</form>
+	
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+	
+</body>
+</html>

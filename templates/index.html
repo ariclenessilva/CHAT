@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset='UTF-8'><meta name="robots" content="noindex">
+
+		<link rel="canonical" href="https://codepen.io/emilcarlsson/pen/ZOQZaV?limit=all&page=74&q=contact+" />
+
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700,300' rel='stylesheet' type='text/css'>
+
+		<script src="https://use.typekit.net/hoy3lrg.js"></script>
+		<script>try{Typekit.load({ async: true });}catch(e){}</script>
+		<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+		
+		<link rel='stylesheet prefetch' href='https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css'><link rel='stylesheet prefetch' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.2/css/font-awesome.min.css'>
+
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/Untitled-3.css') }}">
+		
+		<!-- Socket Io part -->
+		<script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
+		<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>
+		<script type="text/javascript" charset="utf-8">
+			var main_user="";
+			var o_tal_the_room="";
+			var o_tal_the_sender="";
+			var countt=0;
+			var main_user_room="12";
+			var login_user_name="{{username}}";
+			var a_tal_message="";
+			$(document).ready(function() {
+				// Use a "/test" namespace.
+				// An application can open a connection on multiple namespaces, and
+				// Socket.IO will multiplex all those connections on a single
+				// physical channel. If you don't care about multiple channels, you
+				// can set the namespace to an empty string.
+				namespace = '/test';
+
+				// Connect to the Socket.IO server.
+				// The connection URL has the following format:
+				//     http[s]://<domain>:<port>[/<namespace>]
+				var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
+
+				// Event handler for new connections.
+				// The callback function is invoked when a connection with the
+				// server is established.
+				socket.on('connect', function() {
+					{% if list_contact %}
+						{% for segment in list_contact %}
+							var r="{{segment.room}}";
+							socket.emit('join', {room: r.toString()});
+						 {% endfor %}
+				   {% endif %}
+				   {% if list_groups %}
+						{% for segment in list_groups %}
+							var r="{{segment.room}}";
+							socket.emit('join', {room: r.toString()});
+						 {% endfor %}
+				   {% endif %}
+					//socket.emit('my_event', {data: 'I\'m connected!'});
+				});
+
+				// Event handler for server sent data.
+				// The callback function is invoked whenever the server emits data
+				// to the client. The data is then displayed in the "Received"
+				// section of the page.
+				socket.on('my_response', function(msg) {
+					if (login_user_name.toString()==msg.sender && msg.room==main_user_room.toString()){
+						$("#todas_as_mensagens ul").append('<li class="replies"><img src="http://emilcarlsson.se/assets/mikeross.png" alt="" /><p>'+msg.data+'</p></li>');
+						}else if(msg.room==main_user_room.toString()){
+//						/	alert(msg.sender+" sent you a message! Click in his/her contact to see the message")
+							$("#todas_as_mensagens ul").append('<li class="sent"><img src="http://emilcarlsson.se/assets/mikeross.png" alt="" /><p>'+msg.data+'</p></li>');
+						}
+				});
+
+				// Interval function that tests message latency by sending a "ping"
+				// message. The server then responds with a "pong" message and the
+				// round trip time is measured.
+				var ping_pong_times = [];
+				var start_time;
+				window.setInterval(function() {
+					start_time = (new Date).getTime();
+					socket.emit('my_ping');
+				}, 1000);
+
+				// Handler for the "pong" message. When the pong is received, the
+				// time from the ping is stored, and the average of the last 30
+				// samples is average and displayed.
+				socket.on('my_pong', function() {
+					var latency = (new Date).getTime() - start_time;
+					ping_pong_times.push(latency);
+					ping_pong_times = ping_pong_times.slice(-30); // keep last 30 samples
+					var sum = 0;
+					for (var i = 0; i < ping_pong_times.length; i++)
+						sum += ping_pong_times[i];
+					$('#ping-pong').text(Math.round(10 * sum / ping_pong_times.length) / 10);
+				});
+
+				// Handlers for the different forms in the page.
+				// These accept data from the user and send it to the server in a
+				// variety of ways
+				$('form#emit').submit(function(event) {
+					socket.emit('my_event', {data: $('#emit_data').val()});
+					return false;
+				});
+				
+				$('form#join').submit(function(event) {
+					socket.emit('join', {room: $('#join_room').val()});
+					return false;
+				});
+				$('form#leave').submit(function(event) {
+					socket.emit('leave', {room: $('#leave_room').val()});
+					return false;
+				});
+				$('form#send_room').submit(function(event) {
+					socket.emit('my_room_event', {the_contact_now:main_user.toString(),sender_m:login_user_name.toString(), room: main_user_room.toString(), data: $('#room_data').val()});
+					return false;
+				});
+				$('form#close').submit(function(event) {
+					socket.emit('close_room', {room: $('#close_room').val()});
+					return false;
+				});
+				$('form#disconnect').submit(function(event) {
+					socket.emit('disconnect_request');
+					return false;
+				});
+			});
+		</script>
+		
+		
+		<!-- modify the background -->
+		<style class="">body {
+		  display: flex;
+		  align-items: center;
+		  justify-content: center;
+		  min-height: 100vh;
+		  background: #000000;
+		  font-family: "proxima-nova", "Source Sans Pro", sans-serif;
+		  font-size: 1em;
+		  letter-spacing: 0.1px;
+		  color: #32465a;
+		  text-rendering: optimizeLegibility;
+		  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
+		  -webkit-font-smoothing: antialiased;
+		}
+		</style>
+		
+	
+	</head>
+	
+<body>
+<!--    <form id="join" method="POST" action='#'>
+        <input type="text" name="join_room" id="join_room" placeholder="Room Name">
+        <input type="submit" value="Join Room">
+    </form>
+    <form id="leave" method="POST" action='#'>
+        <input type="text" name="leave_room" id="leave_room" placeholder="Room Name">
+        <input type="submit" value="Leave Room">
+    </form>
+-->
+<!--
+    <form id="close" method="POST" action="#">
+        <input type="text" name="close_room" id="close_room" placeholder="Room Name">
+        <input type="submit" value="Close Room">
+    </form>
+    <form id="disconnect" method="POST" action="#">
+        <input type="submit" value="Disconnect">
+    </form>
+  -->
+	<div id="frame">
+		<div id="sidepanel">
+			<div id="profile">
+				<div id="the_wrap_id" class="wrap">
+					<img id="profile-img" src="http://emilcarlsson.se/assets/mikeross.png" class="online" alt="" />
+					<p><script type="text/javascript">document.write(login_user_name.toString())</script></p>
+					<i class="fa fa-chevron-down expand-button" aria-hidden="true"></i>
+					<div id="status-options">
+						<ul>
+							<li id="status-online" class="active"><span class="status-circle"></span> <p>Online</p></li>
+							<li id="status-away"><span class="status-circle"></span> <p>Away</p></li>
+							<li id="status-busy"><span class="status-circle"></span> <p>Busy</p></li>
+							<li id="status-offline"><span class="status-circle"></span><p><a href="/logout">Signout</a></p></li>
+						</ul>
+					</div>
+					<div id="expanded">
+						<label for="twitter"><i class="fa fa-facebook fa-fw" aria-hidden="true"></i></label>
+						<input name="twitter" type="text" value="" />
+						<label for="twitter"><i class="fa fa-twitter fa-fw" aria-hidden="true"></i></label>
+						<input name="twitter" type="text" value="" />
+						<label for="twitter"><i class="fa fa-instagram fa-fw" aria-hidden="true"></i></label>
+						<input name="twitter" type="text" value=""/>
+					</div>
+				</div>
+			</div>
+			
+			<div id="contacts">
+				<ul>
+					{% if list_contact %}
+						{% for segment in list_contact %}
+						<a onclick="change_message_content('{{segment.room}}','{{segment.username}}')">
+						<li class="contact">
+							<div class="wrap">
+								<span class="contact-status online"></span>
+								<img src="http://emilcarlsson.se/assets/louislitt.png" alt="" />
+								<div class="meta">
+									<script>
+										main_user="{{segment.username}}";
+										main_user=main_user.toString();
+									</script>
+									<p class="name"><script type="text/javascript">document.write(main_user)</script></p>
+									<p class="preview"></p>
+								</div>
+							</div>
+						</li>
+						</a>
+					    {% endfor %}
+					
+				    {% endif %}
+					{% if list_groups %}
+					{% for segment in list_groups %}
+						<a onclick="change_message_content('{{segment.room}}','{{segment.username}}')"> 
+						<li class="contact">
+							<div class="wrap">
+								<span class="contact-status online"></span>
+								<img src="http://emilcarlsson.se/assets/louislitt.png" alt="" />
+								<div class="meta">
+									<script>
+										main_user="{{segment.username}}";
+										main_user=main_user.toString();
+									</script>
+									<p class="name"><script type="text/javascript">document.write(main_user)</script></p>
+									<p class="preview"></p>
+								</div>
+							</div>
+						</li>
+						</a>
+					  {% endfor %}
+				   {% endif %}
+				</ul>
+			</div>
+			<div id="bottom-bar">
+				<a href="/add_new_contact"><button id="addcontact"><i class="fa fa-user-plus fa-fw" aria-hidden="true"></i> <span>Add contact</span></button></a>
+				
+				<a href="/add_new_group"><button id="addcontact"><i class="fa fa-user-plus fa-fw" aria-hidden="true"></i> <span>Add Group</span></button></a>
+				
+				<a href="/create_group"><button id="addcontact"><i class="fa fa-plus-square fa-fw" aria-hidden="true"></i> <span>Create Group</span></button></a>
+				
+				<a href="/"><button id="addcontact"><i class="fa fa-user-times fa-fw" aria-hidden="true"></i> <span>Remove Group</span></button></a>
+			</div>
+		</div>
+		<div class="content" id="content_all_message" style="display: none">
+			<div class="contact-profile">
+				<img src="http://emilcarlsson.se/assets/harveyspecter.png" alt="" />
+				<p id="o_nome"></p>
+				<div class="social-media">
+				</div>
+			</div>
+			<div id="todas_as_mensagens" class="messages">
+				<ul id="lista_de_mensagem"></ul>
+			</div>
+			<form id="send_room" method="POST" action="#" class="message-input">
+				<input  style="display: none" value="2" type="text" name="room_name" id="room_name" placeholder="Room Name"> 
+				<input style=" width: 85%; height: 100%" type="text" name="room_data" id="room_data" placeholder="Write your message to text">
+				<input style="width: 10%" class="favorite styled" type="submit" value="Send"> 
+			</form>
+		</div> 
+	</div>
+	
+	<script>
+		function replies_append(d){
+			$("#todas_as_mensagens ul").append('<li class="replies"><img src="http://emilcarlsson.se/assets/mikeross.png" alt="" /><p>'+d.toString()+'</p></li>');
+		}
+		function send_append(d){
+			$("#todas_as_mensagens ul").append('<li class="sent"><img src="http://emilcarlsson.se/assets/mikeross.png" alt="" /><p>'+d.toString()+'</p></li>');
+		}
+		function change_message_content(as, us) {
+			main_user=us.toString();
+			main_user_room=as.toString();
+			$( "#o_nome" ).replaceWith('<p id="o_nome">'+us.toString()+'</p>');
+			$( "#lista_de_mensagem" ).replaceWith('<ul id="lista_de_mensagem"></ul>');
+			$("#content_all_message").css("display", "block");
+			
+			{% for segment in all_messages %}
+				o_tal_the_sender="{{segment.sender}}";
+			 	o_tal_the_sender=o_tal_the_sender.toString();
+			 	o_tal_the_room="{{segment.room}}";
+			    o_tal_the_room=o_tal_the_room.toString();
+			 	if (login_user_name.toString()==o_tal_the_sender && o_tal_the_room==main_user_room.toString()){
+							a_tal_message="{{segment.messages}}";
+							a_tal_message=a_tal_message.toString();
+							replies_append(a_tal_message)
+				}else if(o_tal_the_room==main_user_room.toString()){
+					a_tal_message="{{segment.messages}}";
+					a_tal_message=a_tal_message.toString();
+					send_append(a_tal_message)
+				}
+			{% endfor %}
+		}
+	</script>
+	
+	<script src='https://code.jquery.com/jquery-2.2.4.min.js'></script>
+	<script type="text/javascript" src="{{ url_for('static', filename='js/Untitled-4.js') }}"></script>
+	<script language=" JavaScript" >
+
+</body>
+</html>
