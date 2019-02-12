@@ -21,5 +21,7 @@ Resources:
 - https://www.sqlalchemy.org/
 
 Testing:
-Flask Run
+FLASK_APP=application.py Flask Run
+
+more information about how to run flask application http://flask.pocoo.org/
 
