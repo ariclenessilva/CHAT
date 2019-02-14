@@ -18,6 +18,7 @@ Base = declarative_base()
 
 async_mode = None
 
+###################3 Object Relational of the database ########################################
 class Groups(Base):
     __tablename__ = 'group'
     
@@ -57,6 +58,7 @@ class Users(Base):
     children3 = relationship("Groups", backref='user',
                                 lazy='dynamic')
 
+#####################################################################################
 app = Flask(__name__)   
 engine = create_engine('sqlite:///database/chat_db.db')
 Base.metadata.create_all(engine)
@@ -70,7 +72,7 @@ socketio = SocketIO(app, async_mode=async_mode)
 thread = None
 thread_lock = Lock()
 
-###################### User part #######################################################################
+###################### Users section #######################################################################
 @app.route('/', methods=['GET', 'POST'])
 def login():
     session = DBSession()
@@ -93,7 +95,16 @@ def login():
                     user1 = Users(username=request.form['username'],password='FACEBOOK')
                     session.add(user1)
                     session.commit()
-                return render_template('index.html', username=request.form['username'], login_logout="Logout")
+                
+                user_check=session.query(Users).filter_by(username=session2['username']).first()
+        
+                num_all_messages=user_check.children2.count()
+                
+                return render_template('index.html', async_mode=socketio.async_mode, username=session2['username'], \
+                                       list_contact=user_check.children, all_messages=user_check.children2, \
+                                       num_all_messages=num_all_messages, list_groups=user_check.children3)
+            
+               # return render_template('index.html', username=request.form['username'], login_logout="Logout")
                     
             
             user_check=session.query(Users).filter_by(username=request.form['username']).first()
@@ -102,7 +113,15 @@ def login():
             else:
                 return render_template('fail_login.html')
             
-            return render_template('index.html', username=user_check.username, login_logout="Logout")
+            user_check=session.query(Users).filter_by(username=session2['username']).first()
+        
+            num_all_messages=user_check.children2.count()
+            
+            return render_template('index.html', async_mode=socketio.async_mode, username=session2['username'], \
+                                   list_contact=user_check.children, all_messages=user_check.children2, \
+                                   num_all_messages=num_all_messages, list_groups=user_check.children3)
+            
+        #    return render_template('index.html', username=user_check.username, login_logout="Logout")
         
         return render_template('login_welcome.html', the_appID='492694657926409')
     
@@ -280,7 +299,9 @@ class MyNamespace(Namespace):
             session.add(user_check)
         
         session.commit()
-            
+        
+        user_check=session.query(Users).filter_by(username=session2['username']).first()
+        
         emit('my_response',
              {'room':message['room'],'sender':message['sender_m'],'data': message['data'], 'count': session2['receive_count']},
              room=message['room'])
