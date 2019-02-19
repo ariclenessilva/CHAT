@@ -123,7 +123,7 @@ def login():
             
         #    return render_template('index.html', username=user_check.username, login_logout="Logout")
         
-        return render_template('login_welcome.html', the_appID='492694657926409')
+        return render_template('login_welcome.html', the_appID='')
     
 @app.route('/signup_page', methods=['GET', 'POST'])
 def siggnup():
