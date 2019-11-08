@@ -1,4 +1,4 @@
-# gbsnCHAT
+# CHAT
 A real-time chat using flask (python framework), Socket IO, and SQLalchemy
 
 What can you do with this app?
