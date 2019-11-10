@@ -8,7 +8,7 @@ What can you do with this app?
 - create acount
 - and others
 
-Credits to https://ariclenessilva.github.io./
+Developed by https://ariclenessilva.github.io./
 
 Design By https://bootsnipp.com/snippets/exR5v
 
