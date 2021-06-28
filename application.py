@@ -2,7 +2,8 @@
 """
 Created on Fri Feb  7 09:53:02 2019
 
-@author: Ariclenes Silva
+@author: Ariclenes Silva hugo 
+
 """
 from flask import Flask, render_template, request, redirect, jsonify, url_for, session as session2, json
 from sqlalchemy import create_engine
